@@ -1,0 +1,102 @@
+<div class="container">
+    <div class="wa2">
+        <div class="wa2-pic"> <img src="<?=base_url()?>resource/images/wa3pic1.png" alt=""> </div>
+        <div class="wa2-pic-welcome">
+            <div class="wa2logo"> <img src="<?=base_url()?>resource/images/wa2logo.png" alt="logo"> </div>
+            <div class="great-txt">great!</div>
+            <div class="great-para">
+                <p>waitron screens each of our workers to ensure that every hire is a talented  </p>
+                <p>and experienced professional for the service required.  </p>
+                <div class="tell-txt">please tell us more about your company </div>
+            </div>
+        </div>
+        <?=form_open($this->uri->uri_string())?>
+        <input type="hidden" name="user_type" value="<?=$login['user_type']?>">
+        <input type="hidden" name="firstname" value="<?=$login['firstname']?>">
+        <input type="hidden" name="lastname" value="<?=$login['lastname']?>">
+        <input type="hidden" name="email" value="<?=$login['email']?>">
+        <input type="hidden" name="password" value="<?=$login['password']?>">
+            <div class="wa3-form">
+                <div class="row wa3-form-row">
+                    <div class="col-md-12">
+                        <label class="label-txt">company name</label>
+                        <input type="text" name="companyname" class="form-control" placeholder="company name">
+                    </div>
+                </div>
+                <div class="row wa3-form-row">
+                    <div class="col-md-6">
+                        <label class="label-txt">zip code</label>
+                        <input type="text" name="zipcode" class="form-control" placeholder="zip code">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-txt">city</label>
+                        <input type="text" name="city" class="form-control" placeholder="city">
+                    </div>
+                </div>
+                <div class="row wa3-form-row">
+                    <div class="col-md-6">
+                        <label class="label-txt">state</label>
+                        <input type="text" name="state" class="form-control" placeholder="state">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-txt">phone number</label>
+                        <input type="text" name="phone" class="form-control" placeholder="phone number">
+                    </div>
+                </div>
+                <div class="row wa3-form-row">
+                    <div class="col-md-6">
+                        <label class="label-txt">address</label>
+                        <input type="text" name="address" class="form-control" placeholder="address">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label-txt">suite</label>
+                        <input type="text" name="suite" class="form-control" placeholder="suite">
+                    </div>
+                </div>
+               <div class="row wa3-form-row">
+                    <div class="col-md-12">
+                        <label class="label-txt">select preferred method(s) of contact</label>
+                        
+                        <div class="select-skill">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-primary active">
+                                    email <input type="checkbox" name="moc_email" checked="" value="Yes" autocomplete="off" checked> 
+                                </label>
+                                <label class="btn btn-primary active">
+                                    call    <input type="checkbox" name="moc_call" checked="" value="Yes" autocomplete="off"> 
+                                </label>
+                                <label class="btn btn-primary active">
+                                    text    <input type="checkbox" name="moc_text" checked="" value="Yes" autocomplete="off"> 
+                                </label>
+                            </div>
+                
+                            </div>
+                    </div>
+                </div>
+                <div class="row wa3-form-row">
+                    <div class="col-md-6">
+                        <label class="label-txt">number of job posts per month</label>
+                        <select class="form-control select-form">
+                                <option value=""> ---- select a range ----</option>
+                                <option value="1-10">1-10</option>
+                                <option value="11-50">11-50</option>
+                                <option value="51-100">51-100</option>
+                                <option value="100+">100+</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row wa3-form-row">
+                    <div class="col-md-12">
+                        <input type="submit" class="btn-nxt" name="step2" value="next">
+                    </div>
+                </div>
+            </div>
+            <ul class="step-progress">
+                <li> </li>
+                <li class="current"> </li>
+                <li> </li>
+            </ul>
+            <div class="back-link"> <a href="javascript: window.history.back()">back</a> </div> 
+        </form>
+    </div>
+</div>

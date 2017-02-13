@@ -1,0 +1,251 @@
+<div class="container">
+    <div class="top-heading">
+          jobs
+    </div>
+    <ul class="we5-main we6-main-top clearfix"> 
+        <li class="we5-bg1">
+            <a href="javascript:void(0)" id="activejob" class="we5-bg1">
+                <span class="we5-main-txt1">real time active jobs</span>
+                <span class="we5-main-txt2"><?=$rtjcount?></span>                                
+            </a>
+        </li>
+        <li class="we5-bg2">  
+            <a href="javascript:void(0)" class="we5-bg1">
+                <span class="we5-main-txt1">total active staff</span>
+                <span class="we5-main-txt2"><?=$wstandby?></span>                               
+            </a>
+        </li>
+        <li class="we5-bg1">
+            <a href="javascript:void(0)" id="upcomingjob"  class="we5-bg1">
+                <span class="we5-main-txt1">upcoming jobs</span>
+                <span class="we5-main-txt2"><?=$ujcount?></span>                                
+            </a>
+        </li>
+    </ul>
+    
+    <div class="main-map">
+        <div class="map-sec" id="map" style="width: 796px; height: 405px;"></div>
+        <style type="text/css">.gmnoprint{display: none;} .gm-style div a div img{display: none;}</style>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript">
+              var delay = 100;
+              var infowindow = new google.maps.InfoWindow();
+              var latlng = new google.maps.LatLng(37.5067905, -93.7387361);
+              var mapOptions = {
+                zoom: 4,
+                center: latlng,
+                mapTypeIds: [
+                    google.maps.MapTypeId.ROADMAP,
+                    google.maps.MapTypeId.TERRAIN
+                  ]
+              }
+              var geocoder = new google.maps.Geocoder(); 
+              var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+              var bounds = new google.maps.LatLngBounds();
+
+              map.fitBounds(bounds);
+              var listener = google.maps.event.addListener(map, "idle", function() { 
+                if (map.getZoom() > 16) map.setZoom(16); 
+                google.maps.event.removeListener(listener); 
+              });
+
+              function geocodeAddress(address, next) {
+                geocoder.geocode({address:address}, function (results,status)
+                  { 
+                     if (status == google.maps.GeocoderStatus.OK) {
+                      var p = results[0].geometry.location;
+                      var lat=p.lat();
+                      var lng=p.lng();
+                      createMarker(address,lat,lng);
+                    }
+                    else {
+                       if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                        nextAddress--;
+                        delay++;
+                      } else {
+                                    }   
+                    }
+                    next();
+                  }
+                );
+              }
+             function createMarker(add,lat,lng) {
+               var contentString = add;
+               var marker = new google.maps.Marker({
+                 position: new google.maps.LatLng(lat,lng),
+                 map: map,
+                       });
+
+              google.maps.event.addListener(marker, 'click', function() {
+                 infowindow.setContent(contentString); 
+                 infowindow.open(map,marker);
+               });
+
+               bounds.extend(marker.position);
+
+             }
+              var locations = [
+                        <?php if(count($ajobs)!='0') { 
+                        foreach ($ajobs as $ajob) { 
+                            echo "'";
+                            echo $ajob->state.",".$ajob->address." ".$ajob->city.",".$ajob->zipcode;
+                            echo "',";
+                        } } else { ?>
+                        'NY, New York',
+                        'VA, Virginia'
+                        <?php } ?>
+                    ];
+              var nextAddress = 0;
+              function theNext() {
+                if (nextAddress < locations.length) {
+                  setTimeout('geocodeAddress("'+locations[nextAddress]+'",theNext)', delay);
+                  nextAddress++;
+                } else {
+                  map.fitBounds(bounds);
+                }
+              }
+              theNext();
+        </script>
+        <div class="map-sec-bottom clearfix">
+            <div class="active-job-left">active jobs</div>
+            <div class="active-job-right">
+                <div class="active-job-right1">current date and time: <span id="clockbox"></span> </div>
+                <div class="active-job-right2">
+                    <input type="text" value="United States" placeholder="Enter Location" class="form-control">
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <ul class="add-job">
+        <li><a href="<?=base_url()?>client/jobs/addjob">add job</a></li>
+        <li><a href="<?=base_url()?>client/jobs/addevent">add event</a></li>
+    </ul>
+    
+    <div class="we6-table clearfix" id="activejobs">
+        <div class="we6-table-sorting clearfix">
+            <ul class="we6-table-sorting-select">
+                <li>
+                    <select class="form-control form-short">
+                        <option>sort by</option>
+                    </select>
+                </li>
+                <li>
+                    <select class="form-control form-short">
+                        <option>view only</option>
+                    </select>
+                  </li>
+            </ul>
+        </div>
+          
+        <div class="we6-table-main <?=count($ajobs)>=7 ? 'we6-table-scroll' : ''?>">
+            <div class="table-responsive">
+                <table width="100%" border="0">
+                    <thead>
+                        <tr>
+                            <th>event type</th>
+                            <th>project name</th>
+                            <th>location</th>
+                            <th>time</th>
+                            <th>service type</th>
+                            <th>number of staff</th>
+                            <th>waitron</th>
+                            <th>status</th>
+                            <th>&nbsp;</th>
+                          </tr>
+                    </thead>
+                    <tbody> 
+                    <?php foreach ($ajobs as $ajob) { ?>
+                      <tr>
+                        <td><?=$ajob->eventtype?></td>
+                        <td><?=$ajob->projectname?></td>
+                        <td width="200"><?=$ajob->address.", ".$ajob->state.", ".$ajob->zipcode?></td>
+                        <td><?=date('g:ia',strtotime($ajob->starttime))?> - <?=date('g:ia',strtotime($ajob->endtime))?></td>
+                        <td><?php $i=1; $query=$this->db->query("SELECT servicetype FROM fx_job_services where jobid=".$ajob->jobid);
+                            foreach ($query->result() as $service) {
+                                echo $query->num_rows()==$i ? $service->servicetype : $service->servicetype.",";
+                                $i++;
+                            } ?>
+                        </td>
+                        <td><?=$ajob->totalstaff?></td>
+                        <td><?php if($ajob->jobtype=='Event') { echo 'Multiple'; } else { $staff=$this->db->select('staffid,job_accept_status,confirm_status')->where('jobid',$ajob->jobid)->get('job_assign')->row(); if($staff->staffid==NULL) { echo 'Not Assigned'; } else {  ?> <img src="<?=base_url()?>resource/avatar/<?php $user=$this->db->select('avatar')->where('user_id',$staff->staffid)->get('user_info')->row();
+                            echo $user->avatar==NULL ? 'default.png' : $user->avatar; ?>" alt="" class="img-circle" style="width:55px; height:55px;" > <?php } } ?> </td>
+                        <td> <?php if($ajob->jobtype=='Event') { ?> <a data-toggle="ajaxModal" href="<?=base_url()?>client/jobs/status/<?=$ajob->jobid?>">view</a> <?php } else { ?> <img src="<?=base_url()?>resource/images/<?php if($staff->job_accept_status=='booked' && $staff->confirm_status=="") { echo 'status-blue.png'; } elseif($staff->job_accept_status=='booked' && $staff->confirm_status=="") { echo 'status-green.png'; } else { echo 'status-red.png'; } ?>" alt="" title="<?=$staff->job_accept_status?>"> <?php } ?> </td>
+                        <td><a href="<?=base_url()?>client/jobs/view<?=$ajob->jobtype=='Job' ? 'job' : 'event'?>/<?=$ajob->jobid?>">view</a></td>
+                      </tr>
+                    <?php } ?>
+                    </tbody> 
+                </table>
+            </div>
+        </div>
+        
+        <ul class="we6-table-bottom">
+            <li>booked / conﬁrmed <img src="<?=base_url()?>resource/images/ser1.png" alt=""> </li>
+            <li>awaiting conﬁrmation <img src="<?=base_url()?>resource/images/ser2.png" alt=""> </li>
+            <li>canceled / assigning new waitron / not assign  <img src="<?=base_url()?>resource/images/ser3.png" alt=""> </li>
+        </ul>
+    </div>
+
+    <div class="we6-table clearfix" id="upcomingjobs">
+        <div class="we6-table-sorting clearfix">
+            <div class="upcomming">upcoming jobs</div>
+            <ul class="we6-table-sorting-select">
+                <li>
+                    <select class="form-control form-short">
+                          <option>sort by</option>
+                    </select>
+                </li>
+                <li>
+                    <select class="form-control form-short">
+                          <option>view only</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+          
+        <div class="we6-table-main <?=count($ujobs)>=7 ? 'we6-table-scroll' : ''?>">
+            <div class="table-responsive">
+                <table width="100%" border="0">
+                    <thead>
+                        <tr>
+                            <th>event type</th>
+                            <th>project name</th>
+                            <th>location</th>
+                            <th>date</th>
+                            <th>time</th>
+                            <th>service type</th>
+                            <th>number of staff</th>
+                            <th>waitron</th>
+                            <th>status</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                    
+                    <?php foreach ($ujobs as $ujob) { ?>
+                      <tr>
+                        <td><?=$ujob->eventtype?></td>
+                        <td><?=$ujob->projectname?></td>
+                        <td width="200"><?=$ujob->address.", ".$ujob->state.", ".$ujob->zipcode?></td>
+                        <td><?=date('m/d/y',strtotime($ujob->date))?></td>
+                        <td><?=date('g:ia',strtotime($ujob->starttime))?> - <?=date('g:ia',strtotime($ujob->endtime))?></td>
+                        <td>
+                            <?php $i=1; $query=$this->db->query("SELECT servicetype FROM fx_job_services where jobid=".$ujob->jobid);
+                            foreach ($query->result() as $service) {
+                                echo $query->num_rows()==$i ? $service->servicetype : $service->servicetype.",";
+                                $i++;
+                            } ?>
+                        </td>
+                        <td><?=$ujob->totalstaff?></td>
+                        <td> <?php if($ujob->jobtype=='Event') { echo 'Multiple'; } else { $staff=$this->db->select('staffid,job_accept_status,confirm_status')->where('jobid',$ujob->jobid)->order_by('created','desc')->get('job_assign')->row(); if($staff->staffid==NULL) { echo "Not Assigned"; } else { ?> <img src="<?=base_url()?>resource/avatar/<?php $user=$this->db->select('avatar')->where('user_id',$staff->staffid)->get('user_info')->row(); echo $user->avatar==NULL ? 'default.png' : $user->avatar; ?>" alt="" class="img-circle" style="width:55px; height:55px;" > <?php } } ?> </td>
+                        <td> <?php if($ujob->jobtype=='Event') { ?> <a data-toggle="ajaxModal" href="<?=base_url()?>client/jobs/status/<?=$ujob->jobid?>">view</a> <?php } else { ?> <img src="<?=base_url()?>resource/images/<?php if($staff->job_accept_status=='booked' && $staff->confirm_status=="") { echo 'status-blue.png'; } elseif($staff->job_accept_status=='booked' && $staff->confirm_status=="") { echo 'status-green.png'; } else { echo 'status-red.png'; } ?>" alt="" title="<?=$staff->job_accept_status?>"> <?php } ?> </td>
+                        <td><a href="<?=base_url()?>client/jobs/update<?=$ujob->jobtype=='Job' ? 'job' : 'event'?>/<?=$ujob->jobid?>">edit</a></td>
+                      </tr>
+                    <?php } ?>
+                    </tbody> 
+                </table>
+            </div>
+        </div> 
+    </div>
+</div>
